@@ -35,6 +35,11 @@
         </div>
     </form>
     <table class="table table-condensed table-striped table-bordered">
+            <div class="panel-body">
+                    <b>Список фильмов</b> 
+                    
+                    <button type="button" onclick="sortByTitle()" class="btn btn-sm btn-primary">Отсортировать в фильмы алфавитном порядке</button>
+            </div>
         <thead><tr><th>Название фильма</th><th>Год выпуска</th><th>Формат</th><th>Актёры</th><th></th></tr></thead>        <tbody>
         </tbody>
     </table>
@@ -72,6 +77,23 @@
                 }
             });
         }
+        //Сортировка в алафитном порядке
+        function sortByTitle() {
+            $.ajax({
+                    url: "/api/films",
+                    type: "GET",
+                    contentType: "application/json",
+                    success: function (films) {
+                        films = films.sort((a, b) => a.name > b.name ? 1 : -1);
+                        var rows = "";
+                        $.each(films, function (index, film) {
+                            // добавляем полученные элементы в таблицу
+                            rows += row(film);
+                        })
+                        $("table tbody").append(rows);
+                    }
+                });
+            }
         // Добавление пользователя
         function CreateFilm(filmTitle, filmDate, filmFormat, filmStars) {
             $.ajax({
