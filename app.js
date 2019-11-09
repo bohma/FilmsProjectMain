@@ -9,8 +9,7 @@ const jsonParser = express.json();
 const mongoClient = new MongoClient("mongodb://localhost:27017/", { useUnifiedTopology: true });
  
 let dbFilms;
-//starsMas = [];
-//const filmStars = starsMas;
+
  
 app.use(express.static(__dirname + "/public"));
  
@@ -43,6 +42,20 @@ app.get("/api/films/:id", function(req, res){
         res.send(film);
     });
 });
+
+
+//-------------------------
+/*app.get("/api/films/:title", function(req, res){
+        
+    const id = new objectId(req.params.id);
+    const collection = req.app.locals.collection;
+    collection.findOne({title: title}, function(err, film){
+               
+        if(err) return console.log(err);
+        res.send(film);
+    });
+});*/
+//-------------------------
    
 app.post("/api/films", jsonParser, function (req, res) {
        

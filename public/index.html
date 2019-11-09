@@ -8,7 +8,7 @@
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 </head>
 <body>
-    <h2>Список фильмов</h2>
+    <h2>Добавить фильм</h2>
     <form name="filmForm">
         <input type="hidden" name="id" value="0" />
 
@@ -34,23 +34,48 @@
         <button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
         <a id="reset" class="btn btn-sm btn-primary">Сбросить</a>
     </div>
-    <!------------------------------------->
-    <div class="panel-body">
-        <button type="button" onclick="sortByTitle()" class="btn btn-sm btn-primary">Отсортировать в алфавитном порядке</button>
-    </div>
-    <!------------------------------------->    
-    <!--<div class="panel-body">
-    <input type="text" onchange="searchFilmByTitle()" class="btn btn-sm btn-primary">
-    <input type="button" value="Search Film" class="btn btn-sm btn-primary">
-    </div>-->
+    <!-----------------------------------
+    <form>
+        <div class="panel-body">
+            <input id="filmTitle" class="btn btn-sm btn-primary">
+            <button type="button" onclick="findByTitle()" class="btn btn-sm btn-primary">Найти фильм</button>  
+        </div>
+    </form>
+    -->
     <!------------------------------------->
     <table class="table table-condensed table-striped table-bordered">
-        <thead><tr><th>Id</th><th>Название</th><th>Год выпуска</th><th>Формат</th><th>Актёры</th><th></th></tr></thead>
+        
+        <div class="panel-body">
+                <b>Список фильмов</b> 
+                
+                <button type="button" onclick="sortByTitle()" class="btn btn-sm btn-primary">Отсортировать в фильмы алфавитном порядке</button>
+        </div>
+        <thead><tr><th>Название фильма</th><th>Год выпуска</th><th>Формат</th><th>Актёры</th><th></th></tr></thead>
         <tbody>
         </tbody>
     </table>
   
     <script>
+
+        //Поиск фильма по названию
+
+            /*function findByTitle(){     
+                            $.ajax({
+                                url: "/api/films",
+                                type: "GET",
+                                contentType: "application/json",
+                                success: function (films) {
+                                   let film = films.find(item => item.title=="Thor");
+                                    var rows = "";
+                                    $.each(films, function (index, film) {
+                                        // добавляем полученные элементы в таблицу
+                                        rows += row(film);
+                                    })
+                                    $("table tbody").append(rows);
+                                }
+                            });
+            }*/
+
         // Получение всех фильмов
         function GetFilms() {
             $.ajax({
@@ -84,28 +109,6 @@
                     }
                 });
             }
-            //Поиск фильма по названию
-
-           /* function searchFilmByTitle(value){
-                $.ajax({
-                    url: "/api/films",
-                    type: "GET",
-                    contentType: "application/json",
-                    success: function (films) {
-                        films = film.find(item => item.title==value);
-                        var rows = "";
-                        $.each(films, function (index, film) {
-                            // добавляем полученные элементы в таблицу
-                            rows += row(film);
-                        })
-                        $("table tbody").append(rows);
-                    }
-                });
-            }*/
-        
-
-
-
 
         // Получение одного фильма
       function GetFilm(id) {
@@ -187,8 +190,7 @@
         }
         // создание строки для таблицы
         var row = function (film) {
-            return "<tr data-rowid='" + film._id + "'><td>" + film._id + "</td>" +
-                   "<td>" + film.title + "</td> <td>" + film.date + "</td> <td>" + film.format + "</td> <td>" + film.stars +"</td>" +
+            return "<tr data-rowid='" + film._id + "'><>" + "<td><a class = 'filmLink'"+ film._id + "'>" + film.title + "</a></td> <td>" + film.date + "</td> <td>" + film.format + "</td> <td>" + film.stars +"</td>" +
                    "<td><a class='editLink' data-id='" + film._id + "'>Изменить</a> | " +
                     "<a class='removeLink' data-id='" + film._id + "'>Удалить</a></td></tr>";
         }
@@ -224,7 +226,30 @@
             var id = $(this).data("id");
             Deletefilm(id);
         })
+         // нажимаем на ссылку Фильм
+         $("body").on("click", ".filmLink", function () {
+            var id = $(this).data("id");
+            GetFilm(id);
+        })
   
+
+        function GetFilm(id) {
+            $.ajax({
+                url: "/api/films/"+id,
+                type: "GET",
+                contentType: "application/json",
+                success: function (film) {
+                    var form = document.forms["filmForm"];
+                    form.elements["id"].value = film._id;
+                    form.elements["title"].value = film.title;
+                    form.elements["date"].value = film.date;
+                    form.elements["format"].value = film.format;
+                    form.elements["stars"].value = film.stars.split(', ');
+                }
+            });
+        }
+
+
         // загрузка пользователей
        GetFilms();
     </script>
