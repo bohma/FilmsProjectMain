@@ -83,7 +83,7 @@ app.put("/api/films", jsonParser, function(req, res){
     const filmStars = req.body.stars;
        
     const collection = req.app.locals.collection;
-    collection.findOneAndUpdate({_id: id}, { $set: {title: filmTitle, date: filmDate, format: filmFormat, stars: filmStars}},
+    collection.findOneAndUpdate({_id: id}, { $set: {title: filmTitle, date: filmDate, format: filmFormat, stars: filmStars }},
          {returnOriginal: false },function(err, result){
                
         if(err) return console.log(err);     

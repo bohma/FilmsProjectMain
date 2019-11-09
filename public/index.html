@@ -35,11 +35,12 @@
         </div>
     </form>
     <table class="table table-condensed table-striped table-bordered">
-            <div class="panel-body">
-                    <b>Список фильмов</b> 
-                    
-                    <button type="button" onclick="sortByTitle()" class="btn btn-sm btn-primary">Отсортировать в фильмы алфавитном порядке</button>
-            </div>
+        <div class="panel-body">
+                <b>Список фильмов</b> 
+                
+                <button type="button" onclick="sortByTitle()" class="btn btn-sm btn-primary">Отсортировать в фильмы алфавитном порядке</button>
+        </div>
+
         <thead><tr><th>Название фильма</th><th>Год выпуска</th><th>Формат</th><th>Актёры</th><th></th></tr></thead>        <tbody>
         </tbody>
     </table>
@@ -104,7 +105,7 @@
                     title: filmTitle,
                     date: filmDate,
                     format: filmFormat,
-                    stars: filmStars
+                    stars: filmStars.split(', ')
                 }),
                 success: function (film) {
                     reset();
