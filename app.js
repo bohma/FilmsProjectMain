@@ -42,20 +42,6 @@ app.get("/api/films/:id", function(req, res){
         res.send(film);
     });
 });
-
-
-//-------------------------
-/*app.get("/api/films/:title", function(req, res){
-        
-    const id = new objectId(req.params.id);
-    const collection = req.app.locals.collection;
-    collection.findOne({title: title}, function(err, film){
-               
-        if(err) return console.log(err);
-        res.send(film);
-    });
-});*/
-//-------------------------
    
 app.post("/api/films", jsonParser, function (req, res) {
        
@@ -97,7 +83,7 @@ app.put("/api/films", jsonParser, function(req, res){
     const filmStars = req.body.stars;
        
     const collection = req.app.locals.collection;
-    collection.findOneAndUpdate({_id: id}, { $set: {date: filmDate, title: filmTitle, format: filmFormat, stars: filmStars }},
+    collection.findOneAndUpdate({_id: id}, { $set: {title: filmTitle, date: filmDate, format: filmFormat, stars: filmStars}},
          {returnOriginal: false },function(err, result){
                
         if(err) return console.log(err);     
@@ -105,5 +91,4 @@ app.put("/api/films", jsonParser, function(req, res){
         res.send(film);
     });
 });
- 
 
