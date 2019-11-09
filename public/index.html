@@ -8,10 +8,10 @@
     <script src="https://code.jquery.com/jquery-2.2.4.min.js"></script>
 </head>
 <body>
-    <h2>Список пользователей</h2>
+    <h2>Список фильмов</h2>
     <form name="filmForm">
         <input type="hidden" name="id" value="0" />
-        
+
         <div class="form-group">
             <label for="title">Название фильма:</label>
             <input class="form-control" name="title" />
@@ -22,26 +22,36 @@
         </div>
         <div class="form-group">
             <label for="date">Формат:</label>
-            <input class="form-control" name="date" />
+            <input class="form-control" name="format" />
         </div>
         <div class="form-group">
             <label for="date">Актёры:</label>
-            <input class="form-control" name="date" />
+            <input class="form-control" name="stars" />
         </div>
 
-        <div class="panel-body">
-            <button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
-            <a id="reset" class="btn btn-sm btn-primary">Сбросить</a>
-        </div>
     </form>
+    <div class="panel-body">
+        <button type="submit" class="btn btn-sm btn-primary">Сохранить</button>
+        <a id="reset" class="btn btn-sm btn-primary">Сбросить</a>
+    </div>
+    <!------------------------------------->
+    <div class="panel-body">
+        <button type="button" onclick="sortByTitle()" class="btn btn-sm btn-primary">Отсортировать в алфавитном порядке</button>
+    </div>
+    <!------------------------------------->    
+    <!--<div class="panel-body">
+    <input type="text" onchange="searchFilmByTitle()" class="btn btn-sm btn-primary">
+    <input type="button" value="Search Film" class="btn btn-sm btn-primary">
+    </div>-->
+    <!------------------------------------->
     <table class="table table-condensed table-striped table-bordered">
-        <thead><tr><th>Id</th><th>Имя</th><th>возраст</th><th></th></tr></thead>
+        <thead><tr><th>Id</th><th>Название</th><th>Год выпуска</th><th>Формат</th><th>Актёры</th><th></th></tr></thead>
         <tbody>
         </tbody>
     </table>
   
     <script>
-        // Получение всех пользователей
+        // Получение всех фильмов
         function GetFilms() {
             $.ajax({
                 url: "/api/films",
@@ -57,8 +67,48 @@
                  }
             });
         }
-        // Получение одного пользователя
-        function GetFilm(id) {
+        //Сортировка в алафитном порядке
+        function sortByTitle() {
+            $.ajax({
+                    url: "/api/films",
+                    type: "GET",
+                    contentType: "application/json",
+                    success: function (films) {
+                        films = films.sort((a, b) => a.name > b.name ? 1 : -1);
+                        var rows = "";
+                        $.each(films, function (index, film) {
+                            // добавляем полученные элементы в таблицу
+                            rows += row(film);
+                        })
+                        $("table tbody").append(rows);
+                    }
+                });
+            }
+            //Поиск фильма по названию
+
+           /* function searchFilmByTitle(value){
+                $.ajax({
+                    url: "/api/films",
+                    type: "GET",
+                    contentType: "application/json",
+                    success: function (films) {
+                        films = film.find(item => item.title==value);
+                        var rows = "";
+                        $.each(films, function (index, film) {
+                            // добавляем полученные элементы в таблицу
+                            rows += row(film);
+                        })
+                        $("table tbody").append(rows);
+                    }
+                });
+            }*/
+        
+
+
+
+
+        // Получение одного фильма
+      function GetFilm(id) {
             $.ajax({
                 url: "/api/films/"+id,
                 type: "GET",
@@ -68,18 +118,22 @@
                     form.elements["id"].value = film._id;
                     form.elements["title"].value = film.title;
                     form.elements["date"].value = film.date;
+                    form.elements["format"].value = film.format;
+                    form.elements["stars"].value = film.stars.split(', ');
                 }
             });
         }
-        // Добавление пользователя
-        function CreateFilm(filmTitle, filmDate) {
+        // Добавление фильма
+        function CreateFilm(filmTitle, filmDate, filmFormat, filmStars ) {
             $.ajax({
                 url: "api/films",
                 contentType: "application/json",
                 method: "POST",
                 data: JSON.stringify({
                     title: filmTitle,
-                    date: filmDate
+                    date: filmDate,
+                    format: filmFormat,
+                    stars: filmStars.split(', ') 
                 }),
                 success: function (film) {
                     reset();
@@ -87,8 +141,8 @@
                 }
             })
         }
-        // Изменение пользователя
-        function EditFilm(filmId, filmTitle, filmDate) {
+        // Изменение фильма
+        function EditFilm(filmId, filmTitle, filmDate, filmFormat, filmStars) {
             $.ajax({
                 url: "api/films",
                 contentType: "application/json",
@@ -96,7 +150,9 @@
                 data: JSON.stringify({
                     id: filmId,
                     title: filmTitle,
-                    date: filmDate
+                    date: filmDate,
+                    format: filmFormat,
+                    stars: filmStars
                 }),
                 success: function (film) {
                     reset();
@@ -106,6 +162,10 @@
             })
         }
   
+       
+        
+
+
         // сброс формы
         function reset() {
             var form = document.forms["filmForm"];
@@ -113,7 +173,7 @@
             form.elements["id"].value = 0;
         }
   
-        // Удаление пользователя
+        // Удаление фильма
         function DeleteFilm(id) {
             $.ajax({
                 url: "api/films/"+id,
@@ -128,7 +188,7 @@
         // создание строки для таблицы
         var row = function (film) {
             return "<tr data-rowid='" + film._id + "'><td>" + film._id + "</td>" +
-                   "<td>" + film.title + "</td> <td>" + film.date + "</td>" +
+                   "<td>" + film.title + "</td> <td>" + film.date + "</td> <td>" + film.format + "</td> <td>" + film.stars +"</td>" +
                    "<td><a class='editLink' data-id='" + film._id + "'>Изменить</a> | " +
                     "<a class='removeLink' data-id='" + film._id + "'>Удалить</a></td></tr>";
         }
@@ -145,10 +205,13 @@
             var id = this.elements["id"].value;
             var title = this.elements["title"].value;
             var date = this.elements["date"].value;
+            var format = this.elements["format"].value;
+            var stars = this.elements["stars"].value;
+
             if (id == 0)
-                CreateFilm(title, date);
+                CreateFilm(title, date, format, stars);
             else
-                EditFilm(id, title, date);
+                EditFilm(id, title, date, format, stars);
         });
   
         // нажимаем на ссылку Изменить
@@ -163,7 +226,7 @@
         })
   
         // загрузка пользователей
-        GetFilms();
+       GetFilms();
     </script>
 </body>
 </html>

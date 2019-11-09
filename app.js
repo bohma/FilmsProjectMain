@@ -9,6 +9,8 @@ const jsonParser = express.json();
 const mongoClient = new MongoClient("mongodb://localhost:27017/", { useUnifiedTopology: true });
  
 let dbFilms;
+//starsMas = [];
+//const filmStars = starsMas;
  
 app.use(express.static(__dirname + "/public"));
  
@@ -48,9 +50,9 @@ app.post("/api/films", jsonParser, function (req, res) {
        
     const filmTitle = req.body.title;
     const filmDate = req.body.date;
-    //const filmFormat = req.body.format;
-    //const filmStars = req.body.stars;
-    const film = {title: filmTitle, date: filmDate };
+    const filmFormat = req.body.format;
+    const filmStars  = req.body.stars;
+    const film = {title: filmTitle, date: filmDate, format: filmFormat, stars: filmStars};
        
     const collection = req.app.locals.collection;
     collection.insertOne(film, function(err, result){
@@ -78,9 +80,11 @@ app.put("/api/films", jsonParser, function(req, res){
     const id = new objectId(req.body.id);
     const filmTitle = req.body.title;
     const filmDate = req.body.date;
+    const filmFormat = req.body.format;
+    const filmStars = req.body.stars;
        
     const collection = req.app.locals.collection;
-    collection.findOneAndUpdate({_id: id}, { $set: {date: filmDate, title: filmTitle}},
+    collection.findOneAndUpdate({_id: id}, { $set: {date: filmDate, title: filmTitle, format: filmFormat, stars: filmStars }},
          {returnOriginal: false },function(err, result){
                
         if(err) return console.log(err);     
