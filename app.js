@@ -11,7 +11,7 @@ const jsonParser = express.json();
 const mongoClient = new MongoClient("mongodb://localhost:27017/", { useUnifiedTopology: true });
  
 let dbFilms;
-
+//Для создания папки и для зугрзки текстовых фалов
 var storage	=	multer.diskStorage({
     destination: function (req, file, callback) {
       callback(null, './uploads');
@@ -22,7 +22,7 @@ var storage	=	multer.diskStorage({
   });
   var upload = multer({ storage : storage}).single('filmList');
 
-
+//Покдлючаем базу даннных
 app.use(express.static(__dirname )); 
 mongoClient.connect(function(err, client){
     if(err) return console.log(err);
@@ -32,7 +32,7 @@ mongoClient.connect(function(err, client){
         console.log("Сервер создан!");
     });
 });
- 
+ //Вывод всей информации о фильмах
 app.get("/api/films", function(req, res){
         
     const collection = req.app.locals.collection;
@@ -43,6 +43,7 @@ app.get("/api/films", function(req, res){
     });
      
 });
+//Вывод всей информации о фильме по id
 app.get("/api/films/:id", function(req, res){
         
     const id = new objectId(req.params.id);
@@ -53,6 +54,7 @@ app.get("/api/films/:id", function(req, res){
         res.send(film);
     });
 });   
+//Добавление фильма
 app.post("/api/films", jsonParser, function (req, res) {
        
     if(!req.body) return res.sendStatus(400);
@@ -70,7 +72,8 @@ app.post("/api/films", jsonParser, function (req, res) {
         res.send(film);
     });
 });
-    
+
+//Удаление фильма
 app.delete("/api/films/:id", function(req, res){
         
     const id = new objectId(req.params.id);
@@ -82,7 +85,7 @@ app.delete("/api/films/:id", function(req, res){
         res.send(film);
     });
 });
-   
+   //Обновление данных о фильме
 app.put("/api/films", jsonParser, function(req, res){
         
     if(!req.body) return res.sendStatus(400);
@@ -101,7 +104,7 @@ app.put("/api/films", jsonParser, function(req, res){
         res.send(film);
     });
 });
-
+// Для загрузки текстогого файла  папку uploads
 app.post('/api/download',function(req,res){
 	upload(req,res,function(err) {
 		if(err) {
