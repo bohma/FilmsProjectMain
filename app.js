@@ -1,6 +1,8 @@
 const express = require("express");
 const MongoClient = require("mongodb").MongoClient;
 const objectId = require("mongodb").ObjectID;
+const multer  = require("multer");
+
    
 const app = express();
 const jsonParser = express.json();
@@ -10,9 +12,18 @@ const mongoClient = new MongoClient("mongodb://localhost:27017/", { useUnifiedTo
  
 let dbFilms;
 
- 
-app.use(express.static(__dirname + "/public"));
- 
+var storage	=	multer.diskStorage({
+    destination: function (req, file, callback) {
+      callback(null, './uploads');
+    },
+    filename: function (req, file, callback) {
+      callback(null, file.fieldname + '.txt');
+    }
+  });
+  var upload = multer({ storage : storage}).single('filmList');
+
+
+app.use(express.static(__dirname )); 
 mongoClient.connect(function(err, client){
     if(err) return console.log(err);
     dbFilms = client;
@@ -41,6 +52,15 @@ app.get("/api/films/:id", function(req, res){
         if(err) return console.log(err);
         res.send(film);
     });
+});
+
+app.post('/api/download',function(req,res){
+	upload(req,res,function(err) {
+		if(err) {
+			return res.end("Error uploading file.");
+		}
+		res.end("File is uploaded");
+	});
 });
    
 app.post("/api/films", jsonParser, function (req, res) {
