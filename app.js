@@ -52,17 +52,7 @@ app.get("/api/films/:id", function(req, res){
         if(err) return console.log(err);
         res.send(film);
     });
-});
-
-app.post('/api/download',function(req,res){
-	upload(req,res,function(err) {
-		if(err) {
-			return res.end("Error uploading file.");
-		}
-		res.end("File is uploaded");
-	});
-});
-   
+});   
 app.post("/api/films", jsonParser, function (req, res) {
        
     if(!req.body) return res.sendStatus(400);
@@ -110,5 +100,14 @@ app.put("/api/films", jsonParser, function(req, res){
         const film = result.value;
         res.send(film);
     });
+});
+
+app.post('/api/download',function(req,res){
+	upload(req,res,function(err) {
+		if(err) {
+			return res.end("Error uploading file.");
+		}
+		res.end("File is uploaded");
+	});
 });
 
