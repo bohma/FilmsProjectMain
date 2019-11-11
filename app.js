@@ -2,14 +2,25 @@ const express = require("express");
 const MongoClient = require("mongodb").MongoClient;
 const objectId = require("mongodb").ObjectID;
 const multer  = require("multer");
-
+const mongoose = require("mongoose");
+const cors = require('cors');
+const Schema = mongoose.Schema;
    
 const app = express();
 const jsonParser = express.json();
- 
+let schemaName = new Schema({
+    title: String,
+    date: Number,
+    format: String,
+    stars: String
+}, {
+    collection: 'films'
+});
 //var db;
 const mongoClient = new MongoClient("mongodb://localhost:27017/", { useUnifiedTopology: true });
- 
+//let Model = mongoose.model('Model', schemaName);
+//mongoose.connect('mongodb://localhost:27017/filmsDb');
+
 let dbFilms;
 //Для создания папки и для зугрзки текстовых фалов
 var storage	=	multer.diskStorage({
@@ -32,7 +43,7 @@ mongoClient.connect(function(err, client){
         console.log("Сервер создан!");
     });
 });
- //Вывод всей информации о фильмах
+ //Вывод всей информации о фильмах  
 app.get("/api/films", function(req, res){
         
     const collection = req.app.locals.collection;
@@ -43,6 +54,17 @@ app.get("/api/films", function(req, res){
     });
      
 });
+//Вывод всей информации о фильме по Title
+app.get("/api/films/:title", function(req, res){
+        
+    const title = req.params.title;
+    const collection = req.app.locals.collection;
+    collection.findOne({title: title}, function(err, film){
+               
+        if(err) return console.log(err);
+        res.send(film);
+    });
+});   
 //Вывод всей информации о фильме по id
 app.get("/api/films/:id", function(req, res){
         
@@ -114,3 +136,64 @@ app.post('/api/download',function(req,res){
 	});
 });
 
+
+
+
+////////////
+/*app.get('/api/films/searchTitle/:title', cors(), function(req, res) {
+    var title = req.params.title;
+
+    Model.find({
+        'title': title
+    }, function(err, film) {
+        if (err) throw err;
+        if (result) {
+            res.json(result)
+        } else {
+            res.send(JSON.stringify({
+                error : 'Error'
+            })) 
+        }
+        if(err) return console.log(err);
+        res.send(film);
+    })
+})*/
+
+/*app.get("/api/films/searchTitle", function(req, res){
+        
+    const title = req.params.title;
+    const collection = req.app.locals.collection;
+    collection.findOne({title: title}, function(err, film){
+               
+        if(err) return console.log(err);
+        res.send(film);
+    });
+});*/   
+
+/*app.get("/api/films/search", function(req, res,film_title){
+        
+    const collection = req.app.locals.collection;
+    collection.findOne({film_title},function(err, films){
+         
+        if(err) return console.log(err);
+        res.send(films)
+    });
+     
+});*/
+
+/*app.get("/film/:", function(req, res){
+      
+    //const id = req.params.film_title;
+    //const collection = req.app.locals.collection;
+    dbFilms.findOne(req, function(err, film){
+               
+        if(err) return console.log(err);
+        res.send(film);
+    });
+});*/
+/*app.post("/api/films/:title", jsonParser, function (req, res) {
+    console.log(req.body);
+    if(!req.body) return res.sendStatus(400);
+     
+    res.json(req.body); // отправляем пришедший ответ обратно
+});*/
